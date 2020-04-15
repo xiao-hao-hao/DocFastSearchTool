@@ -1,9 +1,7 @@
 #include "Common.h"
 #include "Sysutil.h"
 #include "./sqlite/sqlite3.h"
-
-//引入静态库
-#pragma comment(lib, "./sqlite/sqlite3.lib")
+#include "DataManager.h"
 
 void Test_DirectionList()
 {
@@ -26,42 +24,66 @@ void Test_DirectionList()
 //	);
 //void sqlite3_free_table(char **result);
 
-void Test_Sqlite()
+//void Test_Sqlite()
+//{
+//	//数据库打开
+//	sqlite3 *db;
+//	int rc = sqlite3_open("test.db", &db);
+//	if (rc != SQLITE_OK)
+//		printf("Open database failed.\n");
+//	else
+//		printf("Open database successed\n");
+//
+//	//操作数据库
+//	string sql = "select * from you_tb";
+//	char **result;
+//	int row, col;
+//	char *zErrmsg = 0;
+//	sqlite3_get_table(db, sql.c_str(), &result, &row, &col, &zErrmsg);//得到的数据是一个一维数组
+//
+//	for (int i = 0; i <= row; ++i)
+//	{
+//		for (int j = 0; j < col; ++j)
+//		{
+//			printf("%-5s", *(result + (i*col) + j));
+//		}
+//		cout << endl;
+//	}
+//
+//	sqlite3_free_table(result);
+//	//关闭数据库
+//	sqlite3_close(db);
+//
+//}
+
+void Test_SqliteManager()
 {
-	//数据库打开
-	sqlite3 *db;
-	int rc = sqlite3_open("test.db", &db);
-	if (rc != SQLITE_OK)
-		printf("Open database failed.\n");
-	else
-		printf("Open database successed\n");
-
-	//操作数据库
-	string sql = "select * from you_tb";
-	char **result;
-	int row, col;
-	char *zErrmsg = 0;
-	sqlite3_get_table(db, sql.c_str(), &result, &row, &col, &zErrmsg);//得到的数据是一个一维数组
-
-	for (int i = 0; i < row; ++i)
+	SqliteManager sm;
+	sm.Open("doc.db");
+	string sql = "create table if not exists doc_tb(id integer primary key autoincrement, doc_name text, doc_path text)";
+	sm.ExecuteSql(sql);
+	string sql1 = "insert into doc_tb values(null, 'stl.pdf', 'c:\\')";
+	sm.ExecuteSql(sql1);
+	string sql2 = "select * from doc_tb";
+	int row = 0, col = 0;
+	char **ppRet = nullptr;
+	sm.GetResultTable(sql2, row, col, ppRet);
+	for (int i = 0; i <= row; ++i)
 	{
 		for (int j = 0; j < col; ++j)
 		{
-			printf("%-5s", *(result + (i*col) + j));
+			printf("%-10s", *(ppRet+(i*col)+j));
 		}
-		cout << endl;
+		printf("\n");
 	}
-
-	sqlite3_free_table(result);
-	//关闭数据库
-	sqlite3_close(db);
-
+	sqlite3_free_table(ppRet);
 }
 
 int main()
 {
-	Test_Sqlite();
+	//Test_Sqlite();
 	//Test_DirectionList();
+	Test_SqliteManager();
 	return 0;
 }
 
