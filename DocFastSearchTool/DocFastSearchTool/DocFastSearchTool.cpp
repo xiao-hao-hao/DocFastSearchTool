@@ -2,6 +2,7 @@
 #include "Sysutil.h"
 #include "./sqlite/sqlite3.h"
 #include "DataManager.h"
+#include "ScanManager.h"
 
 void Test_DirectionList()
 {
@@ -79,11 +80,34 @@ void Test_SqliteManager()
 	sqlite3_free_table(ppRet);
 }
 
+void Test_Log()
+{
+	FILE *fp = fopen("Test.txt", "w");
+	if (fp == NULL)
+	{
+		TRACE_LOG("Open File Error.");
+		return;
+	}
+	else
+		TRACE_LOG("Open File Success.");
+
+	fclose(fp);
+}
+
+void Test_Scan()
+{
+	const string path = "D:\\bishe";
+	ScanManager sm;
+	sm.ScanDirectory(path);
+}
+
 int main()
 {
+	//Test_Log();
 	//Test_Sqlite();
 	//Test_DirectionList();
-	Test_SqliteManager();
+	//Test_SqliteManager();
+	Test_Scan();
 	return 0;
 }
 
