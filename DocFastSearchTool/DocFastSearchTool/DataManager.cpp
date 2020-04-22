@@ -179,3 +179,26 @@ void  DataManager::Search(const string &key, vector<pair<string, string> > &doc_
 	//释放结果表
 	//sqlite3_free_table(ppRet);
 }
+
+void DataManager::SplitHighlight(const string &str, const string &key,
+	                            string &prefix, string &highlight, string &suffix)
+{
+	string strlower(str), keylower(key);
+	//从什么地方开始转换，转换到什么地方，以什么方式转换，将字符串转换为小写，方便查找
+	transform(strlower.begin(), strlower.end(), strlower.begin(), ::tolower);
+	transform(keylower.begin(), keylower.end(), keylower.begin(), ::tolower);
+	cout << strlower;
+	//1 如果中文搜索，并能搜索成功，则直接分离
+	size_t pos = strlower.find(keylower);//找到关键字的首位置
+	if (pos != string::npos)//对原字符串进行分割
+	{
+		prefix = str.substr(0, pos);
+		highlight = str.substr(pos, keylower.size());
+		suffix = str.substr(pos+keylower.size(), string::npos);
+		return;
+	}
+
+	//2 使用拼音全拼搜索
+
+	//3 使用首字母搜索
+}

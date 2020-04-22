@@ -9,6 +9,7 @@
 #include <chrono>
 #include <windows.h>
 #include "Sysframe.h"
+#include <algorithm>
 
 #include "sqlite\sqlite3.h"
 

@@ -6,6 +6,25 @@
 
 char *title = "文档快速搜索工具";
 
+void Test_HighLignt()
+{
+	string str = "123abc比特科技，xyM服务就业6666";
+	string key = "就业";
+	string prefix, highlight, suffix;
+	DataManager::SplitHighlight(str, key, prefix, highlight, suffix);
+	cout << prefix;
+	ColorPrintf(highlight.c_str());
+	cout << suffix <<endl;
+}
+
+int main()
+{
+	system("color F0");
+	Test_HighLignt();
+	return 0;
+}
+
+/*
 int main(int argc, char *argv[])
 {
 	//HideCursor();
