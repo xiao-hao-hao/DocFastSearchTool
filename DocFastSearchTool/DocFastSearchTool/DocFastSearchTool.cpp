@@ -8,8 +8,9 @@ char *title = "文档快速搜索工具";
 
 void Test_HighLignt()
 {
-	string str = "123abc比特科技，xyM服务就业6666";
-	string key = "就业";
+	string str = "123abc比特科技，文档快速搜索工具，xyM服务就业6666";
+	string key = "jiuye";
+	//string key = "文档";
 	string prefix, highlight, suffix;
 	DataManager::SplitHighlight(str, key, prefix, highlight, suffix);
 	cout << prefix;

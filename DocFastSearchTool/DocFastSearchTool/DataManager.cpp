@@ -187,18 +187,64 @@ void DataManager::SplitHighlight(const string &str, const string &key,
 	//从什么地方开始转换，转换到什么地方，以什么方式转换，将字符串转换为小写，方便查找
 	transform(strlower.begin(), strlower.end(), strlower.begin(), ::tolower);
 	transform(keylower.begin(), keylower.end(), keylower.begin(), ::tolower);
-	cout << strlower;
+	//cout << strlower;
 	//1 如果中文搜索，并能搜索成功，则直接分离
 	size_t pos = strlower.find(keylower);//找到关键字的首位置
 	if (pos != string::npos)//对原字符串进行分割
 	{
 		prefix = str.substr(0, pos);
 		highlight = str.substr(pos, keylower.size());
-		suffix = str.substr(pos+keylower.size(), string::npos);
+		suffix = str.substr(pos+keylower.size(), string::npos);//第二个参数表示返回的字节个数，如果是负数，表示一直返回直到字符串结束位置
 		return;
 	}
 
-	//2 使用拼音全拼搜索
+	//2 使用拼音全拼搜索，则需要匹配分离子串汉字和拼音
+	//注意一个汉字占两个字节，但是一个汉字的拼音占几个字节不确定，需要求一下
+	string str_pinyin = ChineseConvertPinYinAllSpell(strlower);
+	string key_pinyin = ChineseConvertPinYinAllSpell(keylower);//key可能是一半拼音一半汉字
+	pos = str_pinyin.find(key_pinyin);//在str中找key的位置
+	if (pos != string::npos)//如果找到了
+	{
+		size_t str_index = 0;
+		size_t pinyin_index = 0;
+
+		size_t highlight_index = 0;
+		size_t highlight_len = 0;
+
+		while (str_index < strlower.size())
+		{
+			if (pinyin_index == pos)
+			{
+				highlight_index = str_index;//找到高亮位置索引
+
+			}
+			if (pinyin_index == pos + key_pinyin.size())//当pinyin_index大于高亮部分索引时把长度计算出来
+			{
+				highlight_len = str_index - highlight_index;//求得高亮部分长度
+				break;
+			}
+			if (strlower[str_index]>=0 && strlower[str_index]<=127)
+			{
+				//是一个字符，索引移动一个字节
+				++str_index;
+				++pinyin_index;
+			}
+			else
+			{
+				//是汉字
+				string word(strlower, str_index, 2);//提取一个汉字
+				string word_pinyin = ChineseConvertPinYinAllSpell(word);//提取的汉字对应的拼音
+
+				str_index += 2;//文字跨越的字节数
+				pinyin_index += word_pinyin.size();//拼音跨越的字节数
+			}
+		}
+		//注意是对原字符串分割，不是对拼音字符串分割
+		prefix = str.substr(0, highlight_index);
+		highlight = str.substr(highlight_index, highlight_len);
+		suffix = str.substr(highlight_index+highlight_len, string::npos);
+		return;
+	}
 
 	//3 使用首字母搜索
 }
