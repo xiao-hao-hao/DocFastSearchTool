@@ -6,26 +6,7 @@
 
 char *title = "文档快速搜索工具";
 
-void Test_HighLignt()
-{
-	string str = "123abc比特科技，文档快速搜索工具，xyM服务就业6666";
-	string key = "jiuye";
-	//string key = "文档";
-	string prefix, highlight, suffix;
-	DataManager::SplitHighlight(str, key, prefix, highlight, suffix);
-	cout << prefix;
-	ColorPrintf(highlight.c_str());
-	cout << suffix <<endl;
-}
 
-int main()
-{
-	system("color F0");
-	Test_HighLignt();
-	return 0;
-}
-
-/*
 int main(int argc, char *argv[])
 {
 	//HideCursor();
@@ -33,7 +14,7 @@ int main(int argc, char *argv[])
 	//创建扫描实例
 	ScanManager::CreateInstance(path);
 	//sm.ScanDirectory(path);
-	
+
 	//创建搜索实例
 	DataManager &dm = DataManager::GetInstance();
 	vector<pair<string, string> > doc_path;
@@ -49,10 +30,19 @@ int main(int argc, char *argv[])
 
 		int init_row = 5;//由界面决定
 		int count = 0;
+		string prefix, highlight, suffix;
 		for (const auto &e : doc_path)
 		{
-			SetCurPos(2, init_row+(count++));
-			printf("%-31s%-50s\n", e.first.c_str(), e.second.c_str());
+			string doc_name = e.first;
+			string doc_path = e.second;
+			DataManager::SplitHighlight(doc_name, key, prefix, highlight, suffix);
+			SetCurPos(2, init_row + (count));
+			cout << prefix;
+			ColorPrintf(highlight.c_str());
+			cout << suffix;
+			SetCurPos(33, init_row + (count++));
+			cout << doc_path;
+			//printf("%-31s%-50s\n", e.first.c_str(), e.second.c_str());
 		}
 		HideCursor();
 		SystemEnd();
@@ -62,6 +52,29 @@ int main(int argc, char *argv[])
 	SystemEnd();
 	return 0;
 }
+
+
+
+//void Test_HighLignt()
+//{
+//	//string str = "123abc比特科技，文档快速搜索工具，xyM服务赵";
+//	string str = "比特科技";
+//	string key = "b";
+//	//string key = "ye";
+//	string prefix, highlight, suffix;
+//	DataManager::SplitHighlight(str, key, prefix, highlight, suffix);
+//	cout << prefix;
+//	ColorPrintf(highlight.c_str());
+//	cout << suffix <<endl;
+//}
+//
+//int main()
+//{
+//	system("color F0");
+//	Test_HighLignt();
+//	return 0;
+//}
+
 
 //void Test_DirectionList()
 //{
@@ -230,44 +243,44 @@ return 0;
 
 void Test_Sqlite()//测试数据库
 {
-	//数据库打开
-	sqlite3 *db;
-	int rc = sqlite3_open("test.db", &db);
-	if (rc != SQLITE_OK)
-		printf("Open database failed.\n");
-	else
-		printf("Open database successed\n");
+//数据库打开
+sqlite3 *db;
+int rc = sqlite3_open("test.db", &db);
+if (rc != SQLITE_OK)
+printf("Open database failed.\n");
+else
+printf("Open database successed\n");
 
-	//操作数据库
-	char *zErrMsg = 0;
-	const char* str = "\nCallback function called\n";
+//操作数据库
+char *zErrMsg = 0;
+const char* str = "\nCallback function called\n";
 
-	//sqlite3_exec(sqlite3*, const char *sql, sqlite_callback, void *data, char **errmsg)
-	//string sql = "create table you_tb(id integer, name varchar(20), path varchar(100))";
-	//string sql = "insert into you_tb values(1, 'abc', 'c:\\')";
-	string sql = "select * from you_tb";
-	//rc = sqlite3_exec(db, sql.c_str(), 0, 0, &zErrMsg);
-	rc = sqlite3_exec(db, sql.c_str(), callback, (void*)str, &zErrMsg);
+//sqlite3_exec(sqlite3*, const char *sql, sqlite_callback, void *data, char **errmsg)
+//string sql = "create table you_tb(id integer, name varchar(20), path varchar(100))";
+//string sql = "insert into you_tb values(1, 'abc', 'c:\\')";
+string sql = "select * from you_tb";
+//rc = sqlite3_exec(db, sql.c_str(), 0, 0, &zErrMsg);
+rc = sqlite3_exec(db, sql.c_str(), callback, (void*)str, &zErrMsg);
 
-	if (rc != SQLITE_OK)
-	{
-		fprintf(stderr, "SQL error: %s\n", zErrMsg);
-		sqlite3_free(zErrMsg);
-	}
-	else
-	{
-		//fprintf(stdout, "Table created successfully\n");
-		fprintf(stdout, "Select data successfully\n");
-	}
-	sqlite3_close(db);
+if (rc != SQLITE_OK)
+{
+fprintf(stderr, "SQL error: %s\n", zErrMsg);
+sqlite3_free(zErrMsg);
+}
+else
+{
+//fprintf(stdout, "Table created successfully\n");
+fprintf(stdout, "Select data successfully\n");
+}
+sqlite3_close(db);
 }
 
 
 int main()
 {
-	Test_Sqlite();
-	//Test_DirectionList();
-	return 0;
+Test_Sqlite();
+//Test_DirectionList();
+return 0;
 }
 
 */

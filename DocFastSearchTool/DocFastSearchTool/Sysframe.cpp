@@ -100,7 +100,7 @@ void DrawFrame(char *title)
 	char mode[128] = { 0 };
 	sprintf(mode, "mode con cols=%d lines=%d", WIDTH, HEIGHT);
 	system(mode); //设置控制台的长度和宽度
-	system("color 0F");//设置颜色
+	system("color F0");//设置颜色
 	DrawCol(0, 0);
 	DrawCol(WIDTH - 2, 0);
 	DrawRow(2, 0);

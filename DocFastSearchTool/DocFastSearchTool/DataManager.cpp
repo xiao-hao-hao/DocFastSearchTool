@@ -240,6 +240,8 @@ void DataManager::SplitHighlight(const string &str, const string &key,
 			}
 		}
 		//注意是对原字符串分割，不是对拼音字符串分割
+		if (str_index == strlower.size())//考虑搜索的是最后一个字的情况
+			highlight_len = str_index - highlight_index;
 		prefix = str.substr(0, highlight_index);
 		highlight = str.substr(highlight_index, highlight_len);
 		suffix = str.substr(highlight_index+highlight_len, string::npos);
@@ -247,4 +249,55 @@ void DataManager::SplitHighlight(const string &str, const string &key,
 	}
 
 	//3 使用首字母搜索
+	string str_initials = ChineseConvertPinYinInitials(strlower);
+	string key_initials = ChineseConvertPinYinInitials(keylower);
+	pos = str_initials.find(key_initials);
+	if (pos != string::npos)
+	{
+		size_t str_index = 0;
+		size_t initials_index = 0;
+
+		size_t highlight_index = 0;
+		size_t highlight_len = 0;
+
+		while (str_index < strlower.size())
+		{
+			if (initials_index == pos)
+			{
+				highlight_index = str_index;
+			}
+			if (initials_index == pos + key_initials.size())
+			{
+				highlight_len = str_index - highlight_index;
+				break;
+			}
+			if (strlower[str_index]>=0 && strlower[str_index]<=127)
+			{
+				//是一个字符，索引移动一个字节
+				++str_index;
+				++initials_index;
+			}
+			else
+			{
+				//是一个汉字
+				if (str_initials[initials_index]<0 || str_initials[initials_index]>127)
+					initials_index += 2;
+				else
+					++initials_index;
+				str_index += 2;
+			}
+		}
+		if (str_index == strlower.size())
+			highlight_len = str_index - highlight_index;
+		prefix = str.substr(0, highlight_index);
+		highlight = str.substr(highlight_index, highlight_len);
+		suffix = str.substr(highlight_index + highlight_len, string::npos);
+		return;
+	}
+
+
+	//没有找到的情况
+	prefix = str;
+	highlight.clear();
+	suffix.clear();
 }
