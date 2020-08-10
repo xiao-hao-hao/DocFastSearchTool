@@ -21,9 +21,6 @@
     <ClInclude Include="Common.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="sqlite3.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
     <ClInclude Include="DataManager.h">
       <Filter>头文件</Filter>
     </ClInclude>

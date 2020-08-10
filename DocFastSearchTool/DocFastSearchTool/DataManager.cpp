@@ -117,6 +117,7 @@ void DataManager::InsertDoc(const string &path, const string &doc)
 	char sql[SQL_BUFFER_SIZE] = {0};
 	string pinyin = ChineseConvertPinYinAllSpell(doc);
 	string initials = ChineseConvertPinYinInitials(doc);
+
 	sprintf(sql, "insert into %s values(null, '%s', '%s', '%s', '%s')", 
 		DOC_TABLE, doc.c_str(), path.c_str(), pinyin.c_str(), initials.c_str());
 	m_dbmgr.ExecuteSql(sql);
@@ -130,7 +131,7 @@ void DataManager::GetDocs(const string &path, multiset<string> &docs)
 	char **ppRet = 0;
 	//m_dbmgr.GetResultTable(sql, row, col, ppRet);
 	AutoGetResultTable at(&m_dbmgr, sql, row, col, ppRet);
-
+	//注意这里我们只获取了文件名
 	for (int i = 1; i <= row; ++i)
 		docs.insert(*(ppRet+i));
 
@@ -187,7 +188,6 @@ void DataManager::SplitHighlight(const string &str, const string &key,
 	//从什么地方开始转换，转换到什么地方，以什么方式转换，将字符串转换为小写，方便查找
 	transform(strlower.begin(), strlower.end(), strlower.begin(), ::tolower);
 	transform(keylower.begin(), keylower.end(), keylower.begin(), ::tolower);
-	//cout << strlower;
 	//1 如果中文搜索，并能搜索成功，则直接分离
 	size_t pos = strlower.find(keylower);//找到关键字的首位置
 	if (pos != string::npos)//对原字符串进行分割
@@ -260,15 +260,15 @@ void DataManager::SplitHighlight(const string &str, const string &key,
 		size_t highlight_index = 0;
 		size_t highlight_len = 0;
 
-		while (str_index < strlower.size())
+		while (str_index < strlower.size())//对str进行遍历
 		{
-			if (initials_index == pos)
+			if (initials_index == pos)//首字母字符串的下标也在动，此下标和str下标相对应
 			{
-				highlight_index = str_index;
+				highlight_index = str_index;//如果找到高亮位置，高亮起始下标赋str_index的值
 			}
-			if (initials_index == pos + key_initials.size())
+			if (initials_index == pos + key_initials.size())//找到了高亮结束位置，求出高亮部分长度，退出循环
 			{
-				highlight_len = str_index - highlight_index;
+				highlight_len = str_index - highlight_index;//高亮部分的长度需要用str下标计算，因为汉字和拼音首字母占字节数不一样
 				break;
 			}
 			if (strlower[str_index]>=0 && strlower[str_index]<=127)
@@ -279,22 +279,22 @@ void DataManager::SplitHighlight(const string &str, const string &key,
 			}
 			else
 			{
-				//是一个汉字
-				if (str_initials[initials_index]<0 || str_initials[initials_index]>127)
+				//是一个汉字或者中文符号
+				//注意可能是汉字之外的中文字符这个时候initials_index中是未转换的中文字符，所以initials_index也可能加2
+				if (str_initials[initials_index] < 0)
 					initials_index += 2;
 				else
 					++initials_index;
 				str_index += 2;
 			}
 		}
-		if (str_index == strlower.size())
+		if (str_index == strlower.size())//高亮字符一直到最后一个字符的情况
 			highlight_len = str_index - highlight_index;
 		prefix = str.substr(0, highlight_index);
 		highlight = str.substr(highlight_index, highlight_len);
 		suffix = str.substr(highlight_index + highlight_len, string::npos);
 		return;
 	}
-
 
 	//没有找到的情况
 	prefix = str;

@@ -15,5 +15,5 @@
 
 using namespace std;
 
-#define SQL_BUFFER_SIZE 256
+#define SQL_BUFFER_SIZE 1024
 #define MAX_TITLE_SIZE 100

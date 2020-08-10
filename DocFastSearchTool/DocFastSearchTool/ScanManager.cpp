@@ -8,25 +8,30 @@ void ScanManager::StartScan(const string &path)
 	while (1)
 	{		
 		//等待3秒再扫描,阻塞当前线程rel_time的时间
-		this_thread::sleep_for(chrono::seconds(3));
+		//this_thread::sleep_for(chrono::seconds(3));
 		ScanDirectory(path);
-
 	}
 }
-ScanManager& ScanManager::CreateInstance(const string &path)
+ScanManager& ScanManager::CreateInstance(const string &path1, const string &path2, const string &path3)
 {
 	static ScanManager inst;
-	thread scan_thread(&StartScan, &inst, path);
-	scan_thread.detach();//与主线程分离
+	thread scan_thread1(&StartScan, &inst, path1);
+	thread scan_thread2(&StartScan, &inst, path2);
+	thread scan_thread3(&StartScan, &inst, path3);
+	scan_thread1.detach();//与主线程分离
+	scan_thread2.detach();
+	scan_thread3.detach();
 	return inst;
 }
 
 void ScanManager::ScanDirectory(const string &path)
 {
 	//1 扫描本地文件系统
+	//如果本地文件系统把一个目录删了，那么local_dirs中就不会有
+	//这个目录，在递归遍历的时候不会遍历他，所以不会出错
 	vector<string> local_files; //subfile
 	vector<string> local_dirs; //subdirs
-	DirectionList(path, local_files, local_dirs);
+	DirectoryList(path, local_files, local_dirs);
 	set<string> local_set;
 	local_set.insert(local_files.begin(), local_files.end());
 	local_set.insert(local_dirs.begin(), local_dirs.end());

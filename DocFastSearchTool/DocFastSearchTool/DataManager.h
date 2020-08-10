@@ -27,10 +27,6 @@ public:
 	//c++11的方式，不允许拷贝构造，不允许赋值
 	AutoGetResultTable(const AutoGetResultTable &) = delete;
 	AutoGetResultTable& operator=(const AutoGetResultTable &) = delete;
-//不允许拷贝构造，不允许赋值
-//protected:
-//	AutoGetResultTable(const AutoGetResultTable &);
-//	AutoGetResultTable& operator=(const AutoGetResultTable &);
 private:
 	SqliteManager *m_db;
 	char          **m_ppRet;
